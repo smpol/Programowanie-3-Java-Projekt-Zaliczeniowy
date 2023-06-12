@@ -22,6 +22,7 @@ public class Kalendarz {
     private int selectedMonth;
     private Set<LocalDate> selectedDays;
     private int daysRemaining;
+    private String nickname;
 
     public Kalendarz() {
         initialize();
@@ -29,6 +30,7 @@ public class Kalendarz {
         LocalDate currentDate = LocalDate.now();
         selectedYear = currentDate.getYear();
         selectedMonth = currentDate.getMonthValue();
+        showNicknameInputDialog();
         generateCalendar();
     }
 
@@ -57,7 +59,7 @@ public class Kalendarz {
         selectedDaysScrollPane.setBounds(580, 40, 200, 310);
         frame.getContentPane().add(selectedDaysScrollPane);
 
-        daysRemainingLabel = new JLabel("Pozostało do wybrania: 0");
+        daysRemainingLabel = new JLabel("");
         daysRemainingLabel.setBounds(580, 10, 200, 14);
         frame.getContentPane().add(daysRemainingLabel);
 
@@ -86,6 +88,17 @@ public class Kalendarz {
         confirmButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 confirmSelectedDays();
+            }
+        });
+
+        selectedDaysList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    int selectedIndex = selectedDaysList.getSelectedIndex();
+                    if (selectedIndex >= 0) {
+                        removeSelectedDay(selectedIndex);
+                    }
+                }
             }
         });
 
@@ -138,7 +151,7 @@ public class Kalendarz {
             });
 
             LocalDate date = LocalDate.of(selectedYear, selectedMonth, day);
-            if (selectedDays.contains(date)) {
+            if (selectedDays.contains(date) && date.getMonthValue() == selectedMonth) {
                 dayButton.setBackground(Color.RED);
             }
 
@@ -188,40 +201,52 @@ public class Kalendarz {
         return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
+    private void removeSelectedDay(int selectedIndex) {
+        String selectedDay = selectedDaysModel.getElementAt(selectedIndex);
+        selectedDaysModel.removeElementAt(selectedIndex);
+
+        LocalDate date = LocalDate.parse(selectedDay, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        selectedDays.remove(date);
+        daysRemaining++;
+
+        updateDaysRemainingLabel();
+        generateCalendar();
+    }
+
     private void confirmSelectedDays() {
         JOptionPane.showMessageDialog(frame, "Wybrane dni wolne zostały potwierdzone!");
+    }
+
+    private void showNicknameInputDialog() {
+        nickname = JOptionPane.showInputDialog(frame, "Podaj swój nick:");
+        if (nickname == null || nickname.isEmpty()) {
+            System.exit(0);
+        }
+
+        showDaysRemainingInputDialog();
+    }
+
+    private void showDaysRemainingInputDialog() {
+        String input = JOptionPane.showInputDialog(frame, "Wpisz ile dni wolnych chcesz wybrać:");
+        if (input == null || input.isEmpty()) {
+            System.exit(0);
+        }
+
+        try {
+            int daysToChoose = Integer.parseInt(input);
+            daysRemaining = daysToChoose;
+            updateDaysRemainingLabel();
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(frame, "Błędna liczba dni. Program zostanie zamknięty.");
+            System.exit(0);
+        }
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 Kalendarz kalendarz = new Kalendarz();
-                kalendarz.showUserInputDialog();
             }
         });
-    }
-
-    private void showUserInputDialog() {
-        String nickname = JOptionPane.showInputDialog(frame, "Podaj swój nick:", "Witaj!", JOptionPane.PLAIN_MESSAGE);
-        if (nickname != null) {
-            showDaysOffInputDialog(nickname);
-        }
-    }
-
-    private void showDaysOffInputDialog(String nickname) {
-        JTextField daysOffTextField = new JTextField();
-        Object[] message = {
-                "Pozostało do wybrania:", daysOffTextField
-        };
-        int option = JOptionPane.showConfirmDialog(frame, message, "Dni wolne dla " + nickname, JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {
-            try {
-                daysRemaining = Integer.parseInt(daysOffTextField.getText());
-                updateDaysRemainingLabel();
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(frame, "Podano nieprawidłową liczbę dni.", "Błąd", JOptionPane.ERROR_MESSAGE);
-                showDaysOffInputDialog(nickname);
-            }
-        }
     }
 }
