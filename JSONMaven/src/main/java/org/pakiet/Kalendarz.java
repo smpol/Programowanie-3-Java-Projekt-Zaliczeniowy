@@ -2,6 +2,7 @@ package org.pakiet;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.*;
 import java.time.*;
 import java.time.format.*;
 import java.util.*;
@@ -19,7 +20,7 @@ public class Kalendarz {
 
     private int selectedYear;
     private int selectedMonth;
-    private Set<Integer> selectedDays;
+    private Set<LocalDate> selectedDays;
     private int daysRemaining;
 
     public Kalendarz() {
@@ -33,7 +34,7 @@ public class Kalendarz {
 
     private void initialize() {
         frame = new JFrame("Kalendarz");
-        frame.setBounds(100, 100, 850, 450);
+        frame.setBounds(100, 100, 800, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
@@ -65,7 +66,7 @@ public class Kalendarz {
         frame.getContentPane().add(monthYearLabel);
 
         confirmButton = new JButton("Potwierdź wybór dni wolnych");
-        confirmButton.setBounds(580, 360, 250, 30);
+        confirmButton.setBounds(580, 360, 200, 30);
         frame.getContentPane().add(confirmButton);
 
         previousMonthButton.addActionListener(new ActionListener() {
@@ -136,7 +137,8 @@ public class Kalendarz {
                 }
             });
 
-            if (selectedDays.contains(day)) {
+            LocalDate date = LocalDate.of(selectedYear, selectedMonth, day);
+            if (selectedDays.contains(date)) {
                 dayButton.setBackground(Color.RED);
             }
 
@@ -153,19 +155,20 @@ public class Kalendarz {
     private void toggleDayOff(JButton dayButton) {
         int day = Integer.parseInt(dayButton.getText());
 
-        if (selectedDays.contains(day)) {
-            selectedDays.remove(day);
+        LocalDate date = LocalDate.of(selectedYear, selectedMonth, day);
+        if (selectedDays.contains(date)) {
+            selectedDays.remove(date);
             dayButton.setBackground(null);
-            selectedDaysModel.removeElement(formatDate(day));
+            selectedDaysModel.removeElement(formatDate(date));
             daysRemaining++;
         } else {
             if (daysRemaining <= 0) {
                 return;
             }
 
-            selectedDays.add(day);
+            selectedDays.add(date);
             dayButton.setBackground(Color.RED);
-            selectedDaysModel.addElement(formatDate(day));
+            selectedDaysModel.addElement(formatDate(date));
             daysRemaining--;
         }
 
@@ -181,8 +184,8 @@ public class Kalendarz {
         monthYearLabel.setText(monthYear);
     }
 
-    private String formatDate(int day) {
-        return String.format("%02d-%02d-%d", day, selectedMonth, selectedYear);
+    private String formatDate(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
     private void confirmSelectedDays() {
