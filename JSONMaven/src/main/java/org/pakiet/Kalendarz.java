@@ -41,6 +41,7 @@ public class Kalendarz {
         LocalDate currentDate = LocalDate.now();
         selectedYear = currentDate.getYear();
         selectedMonth = currentDate.getMonthValue();
+
         showNicknameInputDialog();
         generateCalendar();
     }
@@ -132,7 +133,7 @@ private void selectPreviousMonth(int poprzedni_miesiac, int poprzedni_rok) {
 //    System.out.println("poprzedni rok" + poprzedni_rok);
     if (pierwsza_data_miesiac == poprzedni_miesiac && pierwsza_data_rok == poprzedni_rok) {
     //make alert
-        JOptionPane.showMessageDialog(frame, "Nie możesz cofnąć się do poprzednich miesiecy, ponieważ nie stworzyles wtedy konta");
+        JOptionPane.showMessageDialog(frame, "Nie możesz cofnąć się w czasie. Wtedy nie miales konta i nie deklarowales dni wolnych.");
     }
     else {
         selectedMonth--;
@@ -266,8 +267,7 @@ private void selectPreviousMonth(int poprzedni_miesiac, int poprzedni_rok) {
                 updateDaysRemainingLabel();
 
             } else {
-                //db.addUser(nickname);
-                id_uzytkownika = db.getID(nickname);
+
                 nowy_uzytkownik = true;
                 //get what is a month now
                 LocalDate temp = LocalDate.now();
@@ -295,10 +295,12 @@ private void selectPreviousMonth(int poprzedni_miesiac, int poprzedni_rok) {
 
         try {
             int daysToChoose = Integer.parseInt(input);
-
+            db.addUser(nickname);
+            id_uzytkownika = db.getID(nickname);
             ilosc_pozostalych_dni = daysToChoose;
             ilosc_zadeklarowanych_dni = daysToChoose;
             db.setZadelkarowaneDni(id_uzytkownika, ilosc_zadeklarowanych_dni);
+            db.setIloscPozostalychDni(id_uzytkownika, ilosc_pozostalych_dni);
             updateDaysRemainingLabel();
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(frame, "Błędna liczba dni. Program zostanie zamknięty.");

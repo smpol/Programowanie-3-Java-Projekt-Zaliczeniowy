@@ -1,5 +1,6 @@
 package org.pakiet;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -21,7 +22,6 @@ public class KalendarzDatabase {
         stmt.executeQuery(sql);
         if (stmt.getResultSet().next()) {
             if (stmt.getResultSet().getInt(1) == 0) {
-                addUser(username);
                 return false;
             } else {
                 return true;
@@ -74,6 +74,13 @@ public class KalendarzDatabase {
         }
     }
 
+    public void setIloscPozostalychDni(int id, int ilosc) throws SQLException
+    {
+        Statement stmt = connection.createStatement();
+        String sql = "UPDATE uzytkownicy SET ilosc_dni_pozostalych = " + ilosc + " WHERE id = " + id + ";";
+        stmt.executeUpdate(sql);
+    }
+
     public String getTimeStamptz(int id) throws SQLException
     {
         Statement stmt = connection.createStatement();
@@ -85,5 +92,6 @@ public class KalendarzDatabase {
             return "";
         }
     }
+
 
 }
