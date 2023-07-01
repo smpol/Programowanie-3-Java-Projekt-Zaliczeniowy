@@ -1,4 +1,5 @@
 package org.pakiet;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -29,6 +30,8 @@ public class Kalendarz {
     private JLabel monthYearLabel;
     private JButton confirmButton;
 
+    private JButton modifyButton;
+
     private int selectedYear;
     private int selectedMonth;
     private Set<LocalDate> selectedDays;
@@ -48,7 +51,7 @@ public class Kalendarz {
 
     private void initialize() {
         frame = new JFrame("Kalendarz");
-        frame.setBounds(100, 100, 800, 450);
+        frame.setBounds(100, 100, 810, 480);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
@@ -83,6 +86,11 @@ public class Kalendarz {
         confirmButton.setBounds(580, 360, 200, 30);
         frame.getContentPane().add(confirmButton);
 
+        modifyButton = new JButton("Modyfikuj ilość dni");
+        modifyButton.setBounds(580, 400, 200, 30);
+        frame.getContentPane().add(modifyButton);
+
+
         previousMonthButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //selectPreviousMonth();
@@ -100,7 +108,16 @@ public class Kalendarz {
 
         confirmButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                confirmSelectedDays();
+                try {
+                    confirmSelectedDays();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        modifyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                modifyIloscDni();
             }
         });
 
@@ -126,23 +143,18 @@ public class Kalendarz {
 //        }
 //    }
 
-private void selectPreviousMonth(int poprzedni_miesiac, int poprzedni_rok) {
-//    System.out.println("pierwszy miesiac" + pierwsza_data_miesiac);
-//    System.out.println("pierwszy rok" + pierwsza_data_rok);
-//    System.out.println("poprzedni miesiac" + poprzedni_miesiac);
-//    System.out.println("poprzedni rok" + poprzedni_rok);
-    if (pierwsza_data_miesiac == poprzedni_miesiac && pierwsza_data_rok == poprzedni_rok) {
-    //make alert
-        JOptionPane.showMessageDialog(frame, "Nie możesz cofnąć się w czasie. Wtedy nie miales konta i nie deklarowales dni wolnych.");
-    }
-    else {
-        selectedMonth--;
-        if (selectedMonth < 1) {
-            selectedMonth = 12;
-            selectedYear--;
+    private void selectPreviousMonth(int poprzedni_miesiac, int poprzedni_rok) {
+        if (pierwsza_data_miesiac == poprzedni_miesiac && pierwsza_data_rok == poprzedni_rok) {
+            //make alert
+            JOptionPane.showMessageDialog(frame, "Nie możesz cofnąć się w czasie. Wtedy nie miales konta i nie deklarowales dni wolnych.");
+        } else {
+            selectedMonth--;
+            if (selectedMonth < 1) {
+                selectedMonth = 12;
+                selectedYear--;
+            }
         }
     }
-}
 
     private void selectNextMonth() {
         selectedMonth++;
@@ -244,8 +256,10 @@ private void selectPreviousMonth(int poprzedni_miesiac, int poprzedni_rok) {
         generateCalendar();
     }
 
-    private void confirmSelectedDays() {
+    private void confirmSelectedDays() throws SQLException {
         JOptionPane.showMessageDialog(frame, "Wybrane dni wolne zostały potwierdzone!");
+        db.setDniWolne(id_uzytkownika, selectedDays);
+        db.modifyIloscDni(id_uzytkownika, ilosc_zadeklarowanych_dni, ilosc_pozostalych_dni);
     }
 
     private void showNicknameInputDialog() throws SQLException {
@@ -257,6 +271,8 @@ private void selectPreviousMonth(int poprzedni_miesiac, int poprzedni_rok) {
         try {
             if (db.checkUserExist(nickname)) {
                 id_uzytkownika = db.getID(nickname);
+                selectedDays = db.getDniWolne(id_uzytkownika);
+                copySelectedDaysToSelectedDaysModel();
                 ilosc_zadeklarowanych_dni = db.getZadeklarowaneDni(id_uzytkownika);
                 ilosc_pozostalych_dni = db.getIloscPozostalychDni(id_uzytkownika);
                 String temp = db.getTimeStamptz(id_uzytkownika);
@@ -264,6 +280,7 @@ private void selectPreviousMonth(int poprzedni_miesiac, int poprzedni_rok) {
                 pierwsza_data_rok = Integer.parseInt(temp.substring(0, 4));
 
                 JOptionPane.showMessageDialog(frame, "Witaj ponownie " + nickname + "!");
+                copySelectedDaysToSelectedDaysModel();
                 updateDaysRemainingLabel();
 
             } else {
@@ -307,6 +324,45 @@ private void selectPreviousMonth(int poprzedni_miesiac, int poprzedni_rok) {
             System.exit(0);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void copySelectedDaysToSelectedDaysModel() {
+        selectedDaysModel.clear();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        for (LocalDate selectedDay : selectedDays) {
+            selectedDaysModel.addElement(selectedDay.format(formatter));
+        }
+    }
+
+    private void modifyIloscDni() {
+        //popup z pytaniem o ilosc dni
+        String input = JOptionPane.showInputDialog(frame, "Wpisz ile dni wolnych chcesz wybrać:");
+        if (input == null || input.isEmpty()) {
+            System.exit(0);
+        }
+        //check czy liczba
+        if (input.matches("[0-9]+")) {
+            int nowa_ilosc_deklar = Integer.parseInt(input);
+            if (nowa_ilosc_deklar < 0) {
+                JOptionPane.showMessageDialog(frame, "Błędna liczba dni");
+                //System.exit(0);
+            } else if (nowa_ilosc_deklar < ilosc_zadeklarowanych_dni - ilosc_pozostalych_dni) {
+                JOptionPane.showMessageDialog(frame, "Nie możesz wybrać mniej dni niż już wybrałeś. Usun wybrane dni.");
+            } else {
+                ilosc_pozostalych_dni = nowa_ilosc_deklar - (ilosc_zadeklarowanych_dni - ilosc_pozostalych_dni);
+                ilosc_zadeklarowanych_dni = nowa_ilosc_deklar;
+
+                System.out.println("ilosc_zadeklarowanych_dni: " + ilosc_zadeklarowanych_dni);
+                System.out.println("ilosc_pozostalych_dni: " + ilosc_pozostalych_dni);
+
+
+                db.modifyIloscDni(id_uzytkownika, ilosc_zadeklarowanych_dni, ilosc_pozostalych_dni);
+
+                updateDaysRemainingLabel();
+            }
+
+
         }
     }
 }
