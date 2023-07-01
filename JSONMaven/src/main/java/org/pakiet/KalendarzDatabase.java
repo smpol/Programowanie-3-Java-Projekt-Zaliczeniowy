@@ -11,8 +11,6 @@ public class KalendarzDatabase {
 
     public KalendarzDatabase() throws ClassNotFoundException, SQLException {
         Class.forName("org.postgresql.Driver");
-//        connection = DriverManager.getConnection("jdbc:postgresql://sxterm.mat.umk.pl:5432/BAZA",
-//                "", "");
         connection = DriverManager.getConnection("jdbc:postgresql://db.kwkwxhowsldcunyaeung.supabase.co:5432/postgres?user=postgres&password=nHZ5pS7HwVbi6");
 
     }
@@ -73,6 +71,18 @@ public class KalendarzDatabase {
             return stmt.getResultSet().getInt(1);
         } else {
             return -1;
+        }
+    }
+
+    public String getTimeStamptz(int id) throws SQLException
+    {
+        Statement stmt = connection.createStatement();
+        String sql = "SELECT created_at FROM uzytkownicy WHERE id = " + id + ";";
+        stmt.executeQuery(sql);
+        if (stmt.getResultSet().next()) {
+            return stmt.getResultSet().getString(1);
+        } else {
+            return "";
         }
     }
 

@@ -13,6 +13,10 @@ public class Kalendarz {
     private int ilosc_zadeklarowanych_dni = 0;
     private int ilosc_uzytych_dni = 0;
 
+    private String pierwsza_data = "";
+    private int pierwsza_data_miesiac = 0;
+    private int pierwsza_data_rok = 0;
+
     private int id_uzytkownika = -1;
     KalendarzDatabase db = new KalendarzDatabase();
     private JFrame frame;
@@ -80,7 +84,8 @@ public class Kalendarz {
 
         previousMonthButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                selectPreviousMonth();
+                //selectPreviousMonth();
+                selectPreviousMonth(selectedMonth, selectedYear);
                 generateCalendar();
             }
         });
@@ -111,14 +116,32 @@ public class Kalendarz {
 
         frame.setVisible(true);
     }
+//to dziala
+//    private void selectPreviousMonth() {
+//        selectedMonth--;
+//        if (selectedMonth < 1) {
+//            selectedMonth = 12;
+//            selectedYear--;
+//        }
+//    }
 
-    private void selectPreviousMonth() {
+private void selectPreviousMonth(int poprzedni_miesiac, int poprzedni_rok) {
+//    System.out.println("pierwszy miesiac" + pierwsza_data_miesiac);
+//    System.out.println("pierwszy rok" + pierwsza_data_rok);
+//    System.out.println("poprzedni miesiac" + poprzedni_miesiac);
+//    System.out.println("poprzedni rok" + poprzedni_rok);
+    if (pierwsza_data_miesiac == poprzedni_miesiac && pierwsza_data_rok == poprzedni_rok) {
+    //make alert
+        JOptionPane.showMessageDialog(frame, "Nie możesz cofnąć się do poprzednich miesiecy, ponieważ nie stworzyles wtedy konta");
+    }
+    else {
         selectedMonth--;
         if (selectedMonth < 1) {
             selectedMonth = 12;
             selectedYear--;
         }
     }
+}
 
     private void selectNextMonth() {
         selectedMonth++;
@@ -235,12 +258,22 @@ public class Kalendarz {
                 id_uzytkownika = db.getID(nickname);
                 ilosc_zadeklarowanych_dni = db.getZadeklarowaneDni(id_uzytkownika);
                 ilosc_pozostalych_dni = db.getIloscPozostalychDni(id_uzytkownika);
+                String temp = db.getTimeStamptz(id_uzytkownika);
+                pierwsza_data_miesiac = Integer.parseInt(temp.substring(5, 7));
+                pierwsza_data_rok = Integer.parseInt(temp.substring(0, 4));
+
                 JOptionPane.showMessageDialog(frame, "Witaj ponownie " + nickname + "!");
                 updateDaysRemainingLabel();
 
             } else {
                 //db.addUser(nickname);
                 id_uzytkownika = db.getID(nickname);
+                nowy_uzytkownik = true;
+                //get what is a month now
+                LocalDate temp = LocalDate.now();
+                pierwsza_data_miesiac = temp.getMonthValue();
+                pierwsza_data_rok = temp.getYear();
+
 
                 JOptionPane.showMessageDialog(frame, "Witaj " + nickname + "!");
                 showDaysRemainingInputDialog();
