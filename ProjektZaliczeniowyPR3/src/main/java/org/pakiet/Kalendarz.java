@@ -10,27 +10,19 @@ import java.util.*;
 
 public class Kalendarz {
 
-    private boolean nowy_uzytkownik = false;
-    private int ilosc_zadeklarowanych_dni = 0;
-    private int ilosc_uzytych_dni = 0;
 
-    private String pierwsza_data = "";
+    private int ilosc_zadeklarowanych_dni = 0;
     private int pierwsza_data_miesiac = 0;
     private int pierwsza_data_rok = 0;
 
     private int id_uzytkownika = -1;
     KalendarzDatabase db = new KalendarzDatabase();
     private JFrame frame;
-    private JButton previousMonthButton;
-    private JButton nextMonthButton;
     private JPanel calendarPanel;
     private JList<String> selectedDaysList;
     private DefaultListModel<String> selectedDaysModel;
     private JLabel daysRemainingLabel;
     private JLabel monthYearLabel;
-    private JButton confirmButton;
-
-    private JButton modifyButton;
 
     private int selectedYear;
     private int selectedMonth;
@@ -55,11 +47,11 @@ public class Kalendarz {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
-        previousMonthButton = new JButton("<");
+        JButton previousMonthButton = new JButton("<");
         previousMonthButton.setBounds(10, 10, 50, 20);
         frame.getContentPane().add(previousMonthButton);
 
-        nextMonthButton = new JButton(">");
+        JButton nextMonthButton = new JButton(">");
         nextMonthButton.setBounds(70, 10, 50, 20);
         frame.getContentPane().add(nextMonthButton);
 
@@ -82,44 +74,34 @@ public class Kalendarz {
         monthYearLabel.setBounds(230, 10, 200, 20);
         frame.getContentPane().add(monthYearLabel);
 
-        confirmButton = new JButton("Potwierdź wybór dni wolnych");
+        JButton confirmButton = new JButton("Potwierdź wybór dni wolnych");
         confirmButton.setBounds(580, 360, 200, 30);
         frame.getContentPane().add(confirmButton);
 
-        modifyButton = new JButton("Modyfikuj ilość dni");
+        JButton modifyButton = new JButton("Modyfikuj ilość dni");
         modifyButton.setBounds(580, 400, 200, 30);
         frame.getContentPane().add(modifyButton);
 
 
-        previousMonthButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                //selectPreviousMonth();
-                selectPreviousMonth(selectedMonth, selectedYear);
-                generateCalendar();
-            }
+        previousMonthButton.addActionListener(e -> {
+            //selectPreviousMonth();
+            selectPreviousMonth(selectedMonth, selectedYear);
+            generateCalendar();
         });
 
-        nextMonthButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                selectNextMonth();
-                generateCalendar();
-            }
+        nextMonthButton.addActionListener(e -> {
+            selectNextMonth();
+            generateCalendar();
         });
 
-        confirmButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    confirmSelectedDays();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
+        confirmButton.addActionListener(e -> {
+            try {
+                confirmSelectedDays();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
         });
-        modifyButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                modifyIloscDni();
-            }
-        });
+        modifyButton.addActionListener(e -> modifyIloscDni());
 
         selectedDaysList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -134,14 +116,6 @@ public class Kalendarz {
 
         frame.setVisible(true);
     }
-//to dziala
-//    private void selectPreviousMonth() {
-//        selectedMonth--;
-//        if (selectedMonth < 1) {
-//            selectedMonth = 12;
-//            selectedYear--;
-//        }
-//    }
 
     private void selectPreviousMonth(int poprzedni_miesiac, int poprzedni_rok) {
         if (pierwsza_data_miesiac == poprzedni_miesiac && pierwsza_data_rok == poprzedni_rok) {
@@ -187,11 +161,7 @@ public class Kalendarz {
 
         for (int day = 1; day <= daysInMonth; day++) {
             JButton dayButton = new JButton(String.valueOf(day));
-            dayButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    toggleDayOff(dayButton);
-                }
-            });
+            dayButton.addActionListener(e -> toggleDayOff(dayButton));
 
             LocalDate date = LocalDate.of(selectedYear, selectedMonth, day);
             if (selectedDays.contains(date) && date.getMonthValue() == selectedMonth) {
@@ -262,7 +232,7 @@ public class Kalendarz {
         db.modifyIloscDni(id_uzytkownika, ilosc_zadeklarowanych_dni, ilosc_pozostalych_dni);
     }
 
-    private void showNicknameInputDialog() throws SQLException {
+    private void showNicknameInputDialog() {
         nickname = JOptionPane.showInputDialog(frame, "Podaj swój nick:");
         if (nickname == null || nickname.isEmpty()) {
             System.exit(0);
@@ -285,8 +255,6 @@ public class Kalendarz {
 
             } else {
 
-                nowy_uzytkownik = true;
-                //get what is a month now
                 LocalDate temp = LocalDate.now();
                 pierwsza_data_miesiac = temp.getMonthValue();
                 pierwsza_data_rok = temp.getYear();
@@ -295,9 +263,7 @@ public class Kalendarz {
                 JOptionPane.showMessageDialog(frame, "Witaj " + nickname + "!");
                 showDaysRemainingInputDialog();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (HeadlessException e) {
+        } catch (SQLException | HeadlessException e) {
             throw new RuntimeException(e);
         }
 

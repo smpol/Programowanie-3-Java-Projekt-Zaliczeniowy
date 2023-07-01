@@ -2,7 +2,6 @@ package org.pakiet;
 
 import javax.swing.*;
 import java.sql.SQLException;
-import javax.swing.*;
 
 public class KalendarzRun {
     public static void main(String[] args) {
