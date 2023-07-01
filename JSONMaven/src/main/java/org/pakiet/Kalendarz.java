@@ -3,11 +3,13 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import java.sql.SQLException;
 import java.time.*;
 import java.time.format.*;
 import java.util.*;
 
 public class Kalendarz {
+    KalendarzDatabase db = new KalendarzDatabase();
     private JFrame frame;
     private JButton previousMonthButton;
     private JButton nextMonthButton;
@@ -24,7 +26,7 @@ public class Kalendarz {
     private int daysRemaining;
     private String nickname;
 
-    public Kalendarz() {
+    public Kalendarz() throws SQLException, ClassNotFoundException {
         initialize();
         selectedDays = new HashSet<>();
         LocalDate currentDate = LocalDate.now();
@@ -217,10 +219,23 @@ public class Kalendarz {
         JOptionPane.showMessageDialog(frame, "Wybrane dni wolne zostały potwierdzone!");
     }
 
-    private void showNicknameInputDialog() {
+    private void showNicknameInputDialog() throws SQLException {
         nickname = JOptionPane.showInputDialog(frame, "Podaj swój nick:");
         if (nickname == null || nickname.isEmpty()) {
             System.exit(0);
+        }
+
+        try {
+            if (db.checkUserExist(nickname)) {
+                JOptionPane.showMessageDialog(frame, "Witaj ponownie " + nickname + "!");
+            } else {
+                //db.addUser(nickname);
+                JOptionPane.showMessageDialog(frame, "Witaj " + nickname + "!");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (HeadlessException e) {
+            throw new RuntimeException(e);
         }
 
         showDaysRemainingInputDialog();
@@ -245,7 +260,13 @@ public class Kalendarz {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                Kalendarz kalendarz = new Kalendarz();
+                try {
+                    Kalendarz kalendarz = new Kalendarz();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
