@@ -39,4 +39,41 @@ public class KalendarzDatabase {
         stmt.executeUpdate(sql);
     }
 
+    public int getID(String username) throws SQLException {
+        Statement stmt = connection.createStatement();
+        String sql = "SELECT id FROM uzytkownicy WHERE nick = '" + username + "';";
+        stmt.executeQuery(sql);
+        if (stmt.getResultSet().next()) {
+            return stmt.getResultSet().getInt(1);
+        } else {
+            return -1;
+        }
+    }
+    public void setZadelkarowaneDni(int id, int ilosc) throws SQLException {
+        Statement stmt = connection.createStatement();
+        String sql = "UPDATE uzytkownicy SET ilosc_dni_zadeklarowanych = " + ilosc + " WHERE id = " + id + ";";
+        stmt.executeUpdate(sql);
+    }
+    public int getZadeklarowaneDni(int id) throws SQLException {
+        Statement stmt = connection.createStatement();
+        String sql = "SELECT ilosc_dni_zadeklarowanych FROM uzytkownicy WHERE id = " + id + ";";
+        stmt.executeQuery(sql);
+        if (stmt.getResultSet().next()) {
+            return stmt.getResultSet().getInt(1);
+        } else {
+            return -1;
+        }
+    }
+    public int getIloscPozostalychDni(int id) throws SQLException
+    {
+        Statement stmt = connection.createStatement();
+        String sql = "SELECT ilosc_dni_pozostalych FROM uzytkownicy WHERE id = " + id + ";";
+        stmt.executeQuery(sql);
+        if (stmt.getResultSet().next()) {
+            return stmt.getResultSet().getInt(1);
+        } else {
+            return -1;
+        }
+    }
+
 }

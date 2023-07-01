@@ -2,13 +2,18 @@ package org.pakiet;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.*;
 import java.sql.SQLException;
 import java.time.*;
 import java.time.format.*;
 import java.util.*;
 
 public class Kalendarz {
+
+    private boolean nowy_uzytkownik = false;
+    private int ilosc_zadeklarowanych_dni = 0;
+    private int ilosc_uzytych_dni = 0;
+
+    private int id_uzytkownika = -1;
     KalendarzDatabase db = new KalendarzDatabase();
     private JFrame frame;
     private JButton previousMonthButton;
@@ -23,7 +28,7 @@ public class Kalendarz {
     private int selectedYear;
     private int selectedMonth;
     private Set<LocalDate> selectedDays;
-    private int daysRemaining;
+    private int ilosc_pozostalych_dni;
     private String nickname;
 
     public Kalendarz() throws SQLException, ClassNotFoundException {
@@ -38,7 +43,7 @@ public class Kalendarz {
 
     private void initialize() {
         frame = new JFrame("Kalendarz");
-        frame.setBounds(100, 100, 800, 400);
+        frame.setBounds(100, 100, 800, 450);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
@@ -175,23 +180,23 @@ public class Kalendarz {
             selectedDays.remove(date);
             dayButton.setBackground(null);
             selectedDaysModel.removeElement(formatDate(date));
-            daysRemaining++;
+            ilosc_pozostalych_dni++;
         } else {
-            if (daysRemaining <= 0) {
+            if (ilosc_pozostalych_dni <= 0) {
                 return;
             }
 
             selectedDays.add(date);
             dayButton.setBackground(Color.RED);
             selectedDaysModel.addElement(formatDate(date));
-            daysRemaining--;
+            ilosc_pozostalych_dni--;
         }
 
         updateDaysRemainingLabel();
     }
 
     private void updateDaysRemainingLabel() {
-        daysRemainingLabel.setText("Pozostało do wybrania: " + daysRemaining);
+        daysRemainingLabel.setText("Pozostało do wybrania: " + ilosc_pozostalych_dni);
     }
 
     private void updateMonthYearLabel() {
@@ -209,7 +214,7 @@ public class Kalendarz {
 
         LocalDate date = LocalDate.parse(selectedDay, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         selectedDays.remove(date);
-        daysRemaining++;
+        ilosc_pozostalych_dni++;
 
         updateDaysRemainingLabel();
         generateCalendar();
@@ -227,10 +232,18 @@ public class Kalendarz {
 
         try {
             if (db.checkUserExist(nickname)) {
+                id_uzytkownika = db.getID(nickname);
+                ilosc_zadeklarowanych_dni = db.getZadeklarowaneDni(id_uzytkownika);
+                ilosc_pozostalych_dni = db.getIloscPozostalychDni(id_uzytkownika);
                 JOptionPane.showMessageDialog(frame, "Witaj ponownie " + nickname + "!");
+                updateDaysRemainingLabel();
+
             } else {
                 //db.addUser(nickname);
+                id_uzytkownika = db.getID(nickname);
+
                 JOptionPane.showMessageDialog(frame, "Witaj " + nickname + "!");
+                showDaysRemainingInputDialog();
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -238,7 +251,7 @@ public class Kalendarz {
             throw new RuntimeException(e);
         }
 
-        showDaysRemainingInputDialog();
+        //showDaysRemainingInputDialog();
     }
 
     private void showDaysRemainingInputDialog() {
@@ -249,25 +262,16 @@ public class Kalendarz {
 
         try {
             int daysToChoose = Integer.parseInt(input);
-            daysRemaining = daysToChoose;
+
+            ilosc_pozostalych_dni = daysToChoose;
+            ilosc_zadeklarowanych_dni = daysToChoose;
+            db.setZadelkarowaneDni(id_uzytkownika, ilosc_zadeklarowanych_dni);
             updateDaysRemainingLabel();
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(frame, "Błędna liczba dni. Program zostanie zamknięty.");
             System.exit(0);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    Kalendarz kalendarz = new Kalendarz();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
     }
 }
