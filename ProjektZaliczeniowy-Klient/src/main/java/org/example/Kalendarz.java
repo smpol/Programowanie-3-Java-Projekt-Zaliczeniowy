@@ -388,8 +388,10 @@ public class Kalendarz {
             if (nowa_ilosc_deklar < 0) {
                 JOptionPane.showMessageDialog(frame, "Błędna liczba dni");
                 //System.exit(0);
-            } else if (nowa_ilosc_deklar < ilosc_zadeklarowanych_dni - ilosc_pozostalych_dni) {
-                JOptionPane.showMessageDialog(frame, "Nie możesz wybrać mniej dni niż już wybrałeś. Usun wybrane dni.");
+            } else if (nowa_ilosc_deklar < maksymalna_ilosc_dni_w_roku) {
+                JOptionPane.showMessageDialog(frame, "Nie możesz wybrać mniej ponieważ w roku " + maks_wybrany_rok +
+                        " wybrałeś " + maksymalna_ilosc_dni_w_roku + " dni wolnych. Usun w roku " + maks_wybrany_rok + " a następnie " +
+                        "zmniejsz ponownie ilość dni.");
             } else {
                 ilosc_pozostalych_dni = nowa_ilosc_deklar - (ilosc_zadeklarowanych_dni - ilosc_pozostalych_dni);
                 ilosc_zadeklarowanych_dni = nowa_ilosc_deklar;
