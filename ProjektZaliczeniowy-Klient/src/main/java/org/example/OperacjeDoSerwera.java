@@ -3,6 +3,7 @@ package org.example;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 import java.time.LocalDate;
@@ -72,7 +73,10 @@ public class OperacjeDoSerwera {
 
             return new JSONObject(linia);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            JOptionPane.showMessageDialog(null, "Nie można połączyć się z serwerem", "Błąd", JOptionPane.ERROR_MESSAGE);
+              System.exit(1);
         }
+        return null;
     }
 }
