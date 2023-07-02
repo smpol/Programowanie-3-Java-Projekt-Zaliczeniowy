@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.List;
 
 public class Kalendarz {
 
@@ -38,7 +37,6 @@ public class Kalendarz {
 
     private int maksymalna_ilosc_dni_w_roku = 0;
     private int maks_wybrany_rok = 0;
-    private int wybrany_rok = 0;
 
     private void count_max_choosen_days()
     {
@@ -150,9 +148,7 @@ public class Kalendarz {
             generateCalendar();
         });
 
-        confirmButton.addActionListener(e -> {
-            confirmSelectedDays();
-        });
+        confirmButton.addActionListener(e -> confirmSelectedDays());
         modifyButton.addActionListener(e -> modifyIloscDni());
 
         selectedDaysList.addMouseListener(new MouseAdapter() {
