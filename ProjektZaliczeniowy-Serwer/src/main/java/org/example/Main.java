@@ -14,11 +14,7 @@ public class Main {
                 Operacje watek = new Operacje(socket);
                 watek.start();
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 

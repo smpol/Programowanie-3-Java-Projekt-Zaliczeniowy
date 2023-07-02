@@ -5,7 +5,6 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.net.Socket;
-import java.sql.Array;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -19,9 +18,7 @@ public class Operacje extends Thread {
     {
         try {
             db = new BazaDanych();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -66,9 +63,7 @@ public class Operacje extends Thread {
             bw.newLine();
             bw.flush();
             socket.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
+        } catch (IOException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -105,7 +100,7 @@ public class Operacje extends Thread {
     }
     void setDniWolne(int id_uzytkownika, JSONArray dniWolne) throws SQLException {
         //convert JSONArray to Set<LocalDate> in pattern yyyy-MM-dd
-        Set<LocalDate> temp = new HashSet<LocalDate>();
+        Set<LocalDate> temp = new HashSet<>();
         for (int i = 0; i < dniWolne.length(); i++) {
             temp.add(LocalDate.parse(dniWolne.getString(i)));
         }
