@@ -50,6 +50,11 @@ public class Kalendarz {
     }
 
     private void initialize() {
+        UIManager.put("OptionPane.yesButtonText", "Tak");
+        UIManager.put("OptionPane.noButtonText", "Nie");
+        UIManager.put("OptionPane.cancelButtonText", "Anuluj");
+        UIManager.put("OptionPane.okButtonText", "OK");
+
         frame = new JFrame("Kalendarz");
         frame.setBounds(100, 100, 810, 480);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
