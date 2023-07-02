@@ -74,7 +74,7 @@ public class OperacjeDoSerwera {
         zapytanie.put("operacja", "Modyfikacja_ilosci_dni");
         zapytanie.put("id_uzytkownika", id_uzytkownika);
         zapytanie.put("ilosc_zadeklarowanych_dni", ilosc_zadeklarowanych_dni);
-        zapytanie.put("ilosc_pozostalych_dni", ilosc_pozostalych_dni);
+        //zapytanie.put("ilosc_pozostalych_dni", ilosc_pozostalych_dni);
         operacja(zapytanie);
     }
     JSONObject operacja(JSONObject wybrana_oberacja) {

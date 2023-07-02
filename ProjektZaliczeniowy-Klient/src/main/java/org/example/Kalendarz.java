@@ -9,14 +9,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 
 public class Kalendarz {
 
@@ -60,7 +57,7 @@ public class Kalendarz {
         }
         //find max
         int max = 0;
-        int index = 0;
+        int index = -1;
         for(int i = 0; i < ilosc_dni_w_roku.size(); i++)
         {
             if(ilosc_dni_w_roku.get(i) > max)
@@ -69,11 +66,21 @@ public class Kalendarz {
                 index = i;
             }
         }
-        maks_wybrany_rok = rok.get(index);
-        maksymalna_ilosc_dni_w_roku = max;
+        if (index == -1)
+        {
+            maks_wybrany_rok = 0;
+            maksymalna_ilosc_dni_w_roku = 0;
+
+        }
+        else
+        {
+            maks_wybrany_rok = rok.get(index);
+            maksymalna_ilosc_dni_w_roku = max;
+        }
+
     }
 
-    public Kalendarz() throws SQLException, ClassNotFoundException {
+    public Kalendarz() throws ClassNotFoundException {
         initialize();
         selectedDays = new HashSet<>();
         LocalDate currentDate = LocalDate.now();
@@ -144,11 +151,7 @@ public class Kalendarz {
         });
 
         confirmButton.addActionListener(e -> {
-            try {
-                confirmSelectedDays();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+            confirmSelectedDays();
         });
         modifyButton.addActionListener(e -> modifyIloscDni());
 
@@ -205,7 +208,33 @@ public class Kalendarz {
         }
     }
 
+    private void sortSelectedDays() {
+//        // sort selectedDaysModel
+//        List<String> temp = new ArrayList<>();
+//        for (int i = 0; i < selectedDaysModel.size(); i++) {
+//            temp.add(selectedDaysModel.get(i));
+//        }
+//        Collections.sort(temp);
+//        selectedDaysModel.clear();
+//        for (int i = 0; i < temp.size(); i++) {
+//            selectedDaysModel.addElement(temp.get(i));
+//        }
+        //sort selectedDays
+        ArrayList<LocalDate> temp = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        for (LocalDate selectedDay : selectedDays) {
+            temp.add(LocalDate.parse(selectedDay.format(formatter), formatter));
+        }
+        Collections.sort(temp);
+        selectedDaysModel.clear();
+        for (LocalDate selectedDay : temp) {
+            selectedDaysModel.addElement(selectedDay.format(formatter));
+        }
+
+    }
+
     private void generateCalendar() {
+        sortSelectedDays();
         update_ilosc_pozostalych_dni_w_roku();
         count_max_choosen_days();
         calendarPanel.removeAll();
@@ -262,11 +291,12 @@ public class Kalendarz {
             }
 
             selectedDays.add(date);
+
             dayButton.setBackground(Color.RED);
             selectedDaysModel.addElement(formatDate(date));
             ilosc_pozostalych_dni--;
         }
-
+        sortSelectedDays();
         updateDaysRemainingLabel();
     }
 
@@ -296,7 +326,7 @@ public class Kalendarz {
         generateCalendar();
     }
 
-    private void confirmSelectedDays() throws SQLException {
+    private void confirmSelectedDays() {
 
         operacjeDoSerwera.setDniWolne(id_uzytkownika, selectedDays);
         JOptionPane.showMessageDialog(frame, "Wybrane dni wolne zostały potwierdzone!");
@@ -316,7 +346,7 @@ public class Kalendarz {
                 id_uzytkownika = wynik.getInt("id_uzytkownika");
 
                 ilosc_zadeklarowanych_dni = wynik.getInt("ilosc_zadeklarowanych_dni");
-                ilosc_pozostalych_dni = wynik.getInt("ilosc_pozostalych_dni");
+                //ilosc_pozostalych_dni = wynik.getInt("ilosc_pozostalych_dni");
                 String temp = wynik.getString("TimeStamptz");
                 pierwsza_data_miesiac = Integer.parseInt(temp.substring(5, 7));
                 pierwsza_data_rok = Integer.parseInt(temp.substring(0, 4));
@@ -326,7 +356,6 @@ public class Kalendarz {
                     selectedDays.add(LocalDate.parse(dniWolne.getString(i), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
                 }
 
-                copySelectedDaysToSelectedDaysModel();
 
                 JOptionPane.showMessageDialog(frame, "Witaj ponownie " + nickname + "!");
                 copySelectedDaysToSelectedDaysModel();
@@ -338,6 +367,7 @@ public class Kalendarz {
                 pierwsza_data_miesiac = temp.getMonthValue();
                 pierwsza_data_rok = temp.getYear();
 
+                //copySelectedDaysToSelectedDaysModel();
 
                 JOptionPane.showMessageDialog(frame, "Witaj " + nickname + "!");
                 showDaysRemainingInputDialog();
@@ -390,7 +420,7 @@ public class Kalendarz {
                 //System.exit(0);
             } else if (nowa_ilosc_deklar < maksymalna_ilosc_dni_w_roku) {
                 JOptionPane.showMessageDialog(frame, "Nie możesz wybrać mniej ponieważ w roku " + maks_wybrany_rok +
-                        " wybrałeś " + maksymalna_ilosc_dni_w_roku + " dni wolnych. Usun w roku " + maks_wybrany_rok + " a następnie " +
+                        " wybrałeś " + maksymalna_ilosc_dni_w_roku + " dni. Usun w roku " + maks_wybrany_rok + " a następnie " +
                         "zmniejsz ponownie ilość dni.");
             } else {
                 ilosc_pozostalych_dni = nowa_ilosc_deklar - (ilosc_zadeklarowanych_dni - ilosc_pozostalych_dni);

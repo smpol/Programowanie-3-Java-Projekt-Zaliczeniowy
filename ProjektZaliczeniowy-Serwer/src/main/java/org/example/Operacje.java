@@ -39,7 +39,7 @@ public class Operacje extends Thread {
     public void run() {
         try {
 
-            System.out.println("klinet: " + socket.getInetAddress().getHostAddress());
+            //System.out.println("klinet: " + socket.getInetAddress().getHostAddress());
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String lina = br.readLine();
             JSONObject zap = new JSONObject(lina);
@@ -57,7 +57,7 @@ public class Operacje extends Thread {
             if (zap.getString("operacja").equals("Policzenie_dni_na_rok"))
                 odp = countDaysOnYear(zap.getInt("id_uzytkownika"), zap.getInt("wybrany_rok"));
             if (zap.getString("operacja").equals("Modyfikacja_ilosci_dni"))
-                modifyIloscDni(zap.getInt("id_uzytkownika"), zap.getInt("ilosc_zadeklarowanych_dni"), zap.getInt("ilosc_pozostalych_dni"));
+                modifyIloscDni(zap.getInt("id_uzytkownika"), zap.getInt("ilosc_zadeklarowanych_dni"));
 
 
 
@@ -76,7 +76,7 @@ public class Operacje extends Thread {
         db.addUser(nickname);
         int id = db.getID(nickname);
         db.setZadelkarowaneDni(id, ilosc_dni);
-        db.setIloscPozostalychDni(id, ilosc_dni);
+        //db.setIloscPozostalychDni(id, ilosc_dni);
         zapytanie.put("id_uzytkownika", db.getID(nickname));
         return zapytanie;
     }
@@ -91,7 +91,7 @@ public class Operacje extends Thread {
         JSONObject zapytanie = new JSONObject();
         zapytanie.put("id_uzytkownika", db.getID(nickname));
         zapytanie.put("ilosc_zadeklarowanych_dni", db.getZadeklarowaneDni(zapytanie.getInt("id_uzytkownika")));
-        zapytanie.put("ilosc_pozostalych_dni", db.getIloscPozostalychDni(zapytanie.getInt("id_uzytkownika")));
+        //zapytanie.put("ilosc_pozostalych_dni", db.getIloscPozostalychDni(zapytanie.getInt("id_uzytkownika")));
         zapytanie.put("TimeStamptz", db.getTimeStamptz(zapytanie.getInt("id_uzytkownika")));
 
         //zapytanie.put("getDniWolne", db.getDniWolne(zapytanie.getInt("id_uzytkownika")));
@@ -122,8 +122,8 @@ public class Operacje extends Thread {
         db.setDniWolne(id_uzytkownika, temp);
     }
 
-    void modifyIloscDni(int id_uzytkownika, int ilosc_zadeklarowanych_dni, int ilosc_pozostalych_dni)
+    void modifyIloscDni(int id_uzytkownika, int ilosc_zadeklarowanych_dni)
     {
-        db.modifyIloscDni(id_uzytkownika, ilosc_zadeklarowanych_dni, ilosc_pozostalych_dni);
+        db.modifyIloscDni(id_uzytkownika, ilosc_zadeklarowanych_dni);
     }
 }

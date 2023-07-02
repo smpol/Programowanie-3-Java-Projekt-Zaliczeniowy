@@ -91,10 +91,10 @@ public class BazaDanych {
         }
     }
 
-    public void modifyIloscDni(int id, int ilosc_zadeklarowanych_dni, int ilosc_dni_pozostalych) {
+    public void modifyIloscDni(int id, int ilosc_zadeklarowanych_dni) {
         try {
             Statement stmt = connection.createStatement();
-            String sql = "UPDATE uzytkownicy SET ilosc_dni_zadeklarowanych = " + ilosc_zadeklarowanych_dni + ", ilosc_dni_pozostalych = " + ilosc_dni_pozostalych + " WHERE id = " + id + ";";
+            String sql = "UPDATE uzytkownicy SET ilosc_dni_zadeklarowanych = " + ilosc_zadeklarowanych_dni + " WHERE id = " + id + ";";
             stmt.executeUpdate(sql);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
