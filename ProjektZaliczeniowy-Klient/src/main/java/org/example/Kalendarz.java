@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +39,42 @@ public class Kalendarz {
     private int ilosc_pozostalych_dni;
     private String nickname;
 
+    private int maksymalna_ilosc_dni_w_roku = 0;
+    private int maks_wybrany_rok = 0;
+    private int wybrany_rok = 0;
+
+    private void count_max_choosen_days()
+    {
+        ArrayList<Integer> ilosc_dni_w_roku = new ArrayList<>();
+        ArrayList<Integer> rok = new ArrayList<>();
+        //foreach selectedDays find year and add to array ilosc_dni_w_roku
+        for (LocalDate day : selectedDays) {
+            int year = day.getYear();
+            if(!rok.contains(year))
+            {
+                rok.add(year);
+                ilosc_dni_w_roku.add(0);
+            }
+            int index = rok.indexOf(year);
+            ilosc_dni_w_roku.set(index, ilosc_dni_w_roku.get(index) + 1);
+        }
+        //find max
+        int max = 0;
+        int index = 0;
+        for(int i = 0; i < ilosc_dni_w_roku.size(); i++)
+        {
+            if(ilosc_dni_w_roku.get(i) > max)
+            {
+                max = ilosc_dni_w_roku.get(i);
+                index = i;
+            }
+        }
+        maks_wybrany_rok = rok.get(index);
+        maksymalna_ilosc_dni_w_roku = max;
+        System.out.println("Maksymalna ilosc dni w roku: " + maksymalna_ilosc_dni_w_roku);
+        System.out.println("Maksymalny rok: " + maks_wybrany_rok);
+
+    }
     public Kalendarz() throws SQLException, ClassNotFoundException {
         initialize();
         selectedDays = new HashSet<>();
@@ -46,6 +83,7 @@ public class Kalendarz {
         selectedMonth = currentDate.getMonthValue();
 
         showNicknameInputDialog();
+
         generateCalendar();
     }
 
@@ -164,6 +202,7 @@ public class Kalendarz {
     }
 
     private void generateCalendar() {
+        count_max_choosen_days();
         calendarPanel.removeAll();
 
         Calendar calendar = Calendar.getInstance();
@@ -227,6 +266,7 @@ public class Kalendarz {
     }
 
     private void updateDaysRemainingLabel() {
+        count_max_choosen_days();
         daysRemainingLabel.setText("Pozostało do wybrania: " + ilosc_pozostalych_dni);
     }
 
