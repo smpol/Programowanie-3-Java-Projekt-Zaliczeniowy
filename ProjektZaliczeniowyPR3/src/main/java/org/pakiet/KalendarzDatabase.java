@@ -15,7 +15,7 @@ public class KalendarzDatabase {
     public KalendarzDatabase() throws ClassNotFoundException, SQLException {
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection("jdbc:postgresql://db.kwkwxhowsldcunyaeung.supabase.co:5432/postgres?user=postgres&password=nHZ5pS7HwVbi6");
+            connection = DriverManager.getConnection("jdbc:postgresql://db.scfmfiwnmemndiuolvdl.supabase.co:5432/postgres?user=postgres&password=nHZ5pS7HwVbi6");
         } catch (ClassNotFoundException e) {
             throw new ClassNotFoundException("Nie znaleziono sterownika bazy danych: " + e.getMessage());
         } catch (SQLException e) {
