@@ -111,6 +111,17 @@ public class BazaDanych {
         }
     }
 
+    public int countDaysOnYear(int id, int rok) throws SQLException {
+        Statement stmt = connection.createStatement();
+        String sql = "SELECT COUNT(*) FROM daty WHERE id_uzytkownika = " + id + " AND data LIKE '" + rok + "%';";
+        stmt.executeQuery(sql);
+        if (stmt.getResultSet().next()) {
+            return stmt.getResultSet().getInt(1);
+        } else {
+            return -1;
+        }
+    }
+
     public Set<LocalDate> getDniWolne(int id) throws SQLException {
         Statement stmt = connection.createStatement();
         String sql = "SELECT data FROM daty WHERE id_uzytkownika = " + id + ";";

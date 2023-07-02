@@ -1,6 +1,7 @@
 package org.example;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -53,6 +54,8 @@ public class Operacje extends Thread {
             if (zap.getString("operacja").equals("Ustawienie_dni_wolnych")) {
                 setDniWolne(zap.getInt("id_uzytkownika"), zap.getJSONArray("dni_wolne"));
             }
+            if (zap.getString("operacja").equals("Policzenie_dni_na_rok"))
+                odp = countDaysOnYear(zap.getInt("id_uzytkownika"), zap.getInt("wybrany_rok"));
             if (zap.getString("operacja").equals("Modyfikacja_ilosci_dni"))
                 modifyIloscDni(zap.getInt("id_uzytkownika"), zap.getInt("ilosc_zadeklarowanych_dni"), zap.getInt("ilosc_pozostalych_dni"));
 
@@ -96,6 +99,18 @@ public class Operacje extends Thread {
         LocalDate[] dniWolne = temp.toArray(new LocalDate[temp.size()]);
         zapytanie.put("dniWolne", dniWolne);
 
+        return zapytanie;
+    }
+
+    JSONObject countDaysOnYear(int id, int rok) throws SQLException {
+        JSONObject zapytanie = new JSONObject();
+        try {
+            zapytanie.put("ilosc_dni_w_wybranym_roku", db.countDaysOnYear(id, rok));
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return zapytanie;
     }
     void setDniWolne(int id_uzytkownika, JSONArray dniWolne) throws SQLException {

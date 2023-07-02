@@ -32,8 +32,27 @@ public class OperacjeDoSerwera {
         zapytanie.put("operacja", "Dodanie_usera");
         zapytanie.put("nickname", nickname);
         zapytanie.put("ilosc_dni", ilosc_dni);
-
         return operacja(zapytanie);
+    }
+
+//        JSONObject countDaysOnYear(int id, int rok)
+//        {
+//            JSONObject zapytanie = new JSONObject();
+//            zapytanie.put("operacja", "Policzenie_dni_na_rok");
+//            zapytanie.put("id_uzytkownika", id);
+//            zapytanie.put("wybrany_rok", rok);
+//            return operacja(zapytanie);
+//
+//        }
+
+    int countDaysOnYear(int id, int rok)
+    {
+        JSONObject zapytanie = new JSONObject();
+        zapytanie.put("operacja", "Policzenie_dni_na_rok");
+        zapytanie.put("id_uzytkownika", id);
+        zapytanie.put("wybrany_rok", rok);
+        JSONObject odp = operacja(zapytanie);
+        return odp.getInt("ilosc_dni_w_wybranym_roku");
     }
 
     void setDniWolne(int id, Set<LocalDate> selectedDays) {

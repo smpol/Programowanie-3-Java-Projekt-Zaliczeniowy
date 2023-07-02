@@ -71,10 +71,8 @@ public class Kalendarz {
         }
         maks_wybrany_rok = rok.get(index);
         maksymalna_ilosc_dni_w_roku = max;
-        System.out.println("Maksymalna ilosc dni w roku: " + maksymalna_ilosc_dni_w_roku);
-        System.out.println("Maksymalny rok: " + maks_wybrany_rok);
-
     }
+
     public Kalendarz() throws SQLException, ClassNotFoundException {
         initialize();
         selectedDays = new HashSet<>();
@@ -193,6 +191,12 @@ public class Kalendarz {
         }
     }
 
+    private void update_ilosc_pozostalych_dni_w_roku()
+    {
+        ilosc_pozostalych_dni = ilosc_zadeklarowanych_dni;
+        ilosc_pozostalych_dni -= operacjeDoSerwera.countDaysOnYear(id_uzytkownika, selectedYear);
+    }
+
     private void selectNextMonth() {
         selectedMonth++;
         if (selectedMonth > 12) {
@@ -202,6 +206,7 @@ public class Kalendarz {
     }
 
     private void generateCalendar() {
+        update_ilosc_pozostalych_dni_w_roku();
         count_max_choosen_days();
         calendarPanel.removeAll();
 
