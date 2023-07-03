@@ -30,6 +30,7 @@ public class Kalendarz {
     private JLabel monthYearLabel;
 
     private int selectedYear;
+    private int tempYear=0;
     private int selectedMonth;
     private Set<LocalDate> selectedDays;
     private int ilosc_pozostalych_dni;
@@ -230,9 +231,15 @@ public class Kalendarz {
     }
 
     private void generateCalendar() {
+        if (selectedYear!=tempYear)
+        {
+            update_ilosc_pozostalych_dni_w_roku();
+            count_max_choosen_days();
+            tempYear = selectedYear;
+        }
+        //System.out.println("tempYear: " + tempYear);
         sortSelectedDays();
-        update_ilosc_pozostalych_dni_w_roku();
-        count_max_choosen_days();
+
         calendarPanel.removeAll();
 
         Calendar calendar = Calendar.getInstance();
