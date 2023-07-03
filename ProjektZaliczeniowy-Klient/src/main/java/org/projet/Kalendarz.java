@@ -128,7 +128,7 @@ public class Kalendarz {
         monthYearLabel.setBounds(230, 10, 200, 20);
         frame.getContentPane().add(monthYearLabel);
 
-        JButton confirmButton = new JButton("Potwierdź wybór dni wolnych");
+        JButton confirmButton = new JButton("Zatwierdź wybór dni wolnych");
         confirmButton.setBounds(580, 360, 200, 30);
         frame.getContentPane().add(confirmButton);
 

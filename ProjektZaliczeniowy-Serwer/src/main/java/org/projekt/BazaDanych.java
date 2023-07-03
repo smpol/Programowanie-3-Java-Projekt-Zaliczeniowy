@@ -74,12 +74,6 @@ public class BazaDanych {
         }
     }
 
-    public void setIloscPozostalychDni(int id, int ilosc) throws SQLException {
-        Statement stmt = connection.createStatement();
-        String sql = "UPDATE uzytkownicy SET ilosc_dni_pozostalych = " + ilosc + " WHERE id = " + id + ";";
-        stmt.executeUpdate(sql);
-    }
-
     public String getTimeStamptz(int id) throws SQLException {
         Statement stmt = connection.createStatement();
         String sql = "SELECT created_at FROM uzytkownicy WHERE id = " + id + ";";
