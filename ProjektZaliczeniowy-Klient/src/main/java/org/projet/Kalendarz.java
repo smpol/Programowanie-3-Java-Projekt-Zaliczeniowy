@@ -16,11 +16,11 @@ import java.util.*;
 
 public class Kalendarz {
 
+    private final Set<LocalDate> selectedDays;
     OperacjeDoSerwera operacjeDoSerwera = new OperacjeDoSerwera();
     private int ilosc_zadeklarowanych_dni = 0;
     private int pierwsza_data_miesiac = 0;
     private int pierwsza_data_rok = 0;
-
     private int id_uzytkownika = -1;
     private JFrame frame;
     private JPanel calendarPanel;
@@ -28,11 +28,9 @@ public class Kalendarz {
     private DefaultListModel<String> selectedDaysModel;
     private JLabel daysRemainingLabel;
     private JLabel monthYearLabel;
-
     private int selectedYear;
     private int tempYear = 0;
     private int selectedMonth;
-    private final Set<LocalDate> selectedDays;
     private int ilosc_pozostalych_dni;
     private String nickname;
 
@@ -306,8 +304,8 @@ public class Kalendarz {
 
         LocalDate date = LocalDate.parse(selectedDay, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         selectedDays.remove(date);
-        ilosc_pozostalych_dni++;
-
+        //ilosc_pozostalych_dni++;
+        update_ilosc_pozostalych_dni_w_roku();
         updateDaysRemainingLabel();
         generateCalendar();
     }
