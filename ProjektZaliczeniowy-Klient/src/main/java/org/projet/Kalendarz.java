@@ -405,7 +405,7 @@ public class Kalendarz {
             modifyIloscDni();
         }
         //check czy liczba
-        else if (input.matches("[0-9]+") && input != null) {
+        else if (input.matches("[0-9]+")) {
             int nowa_ilosc_deklar = Integer.parseInt(input);
             if (nowa_ilosc_deklar < 0) {
                 JOptionPane.showMessageDialog(frame, "Błędna liczba dni");
