@@ -2,6 +2,7 @@ package org.projet;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -29,54 +30,14 @@ public class Kalendarz {
     private JLabel monthYearLabel;
 
     private int selectedYear;
-    private int tempYear=0;
+    private int tempYear = 0;
     private int selectedMonth;
-    private Set<LocalDate> selectedDays;
+    private final Set<LocalDate> selectedDays;
     private int ilosc_pozostalych_dni;
     private String nickname;
 
     private int maksymalna_ilosc_dni_w_roku = 0;
     private int maks_wybrany_rok = 0;
-
-    private void count_max_choosen_days()
-    {
-        ArrayList<Integer> ilosc_dni_w_roku = new ArrayList<>();
-        ArrayList<Integer> rok = new ArrayList<>();
-        //foreach selectedDays find year and add to array ilosc_dni_w_roku
-        for (LocalDate day : selectedDays) {
-            int year = day.getYear();
-            if(!rok.contains(year))
-            {
-                rok.add(year);
-                ilosc_dni_w_roku.add(0);
-            }
-            int index = rok.indexOf(year);
-            ilosc_dni_w_roku.set(index, ilosc_dni_w_roku.get(index) + 1);
-        }
-        //find max
-        int max = 0;
-        int index = -1;
-        for(int i = 0; i < ilosc_dni_w_roku.size(); i++)
-        {
-            if(ilosc_dni_w_roku.get(i) > max)
-            {
-                max = ilosc_dni_w_roku.get(i);
-                index = i;
-            }
-        }
-        if (index == -1)
-        {
-            maks_wybrany_rok = 0;
-            maksymalna_ilosc_dni_w_roku = 0;
-
-        }
-        else
-        {
-            maks_wybrany_rok = rok.get(index);
-            maksymalna_ilosc_dni_w_roku = max;
-        }
-
-    }
 
     public Kalendarz() throws ClassNotFoundException {
         initialize();
@@ -88,6 +49,39 @@ public class Kalendarz {
         showNicknameInputDialog();
 
         generateCalendar();
+    }
+
+    private void count_max_choosen_days() {
+        ArrayList<Integer> ilosc_dni_w_roku = new ArrayList<>();
+        ArrayList<Integer> rok = new ArrayList<>();
+        //foreach selectedDays find year and add to array ilosc_dni_w_roku
+        for (LocalDate day : selectedDays) {
+            int year = day.getYear();
+            if (!rok.contains(year)) {
+                rok.add(year);
+                ilosc_dni_w_roku.add(0);
+            }
+            int index = rok.indexOf(year);
+            ilosc_dni_w_roku.set(index, ilosc_dni_w_roku.get(index) + 1);
+        }
+        //find max
+        int max = 0;
+        int index = -1;
+        for (int i = 0; i < ilosc_dni_w_roku.size(); i++) {
+            if (ilosc_dni_w_roku.get(i) > max) {
+                max = ilosc_dni_w_roku.get(i);
+                index = i;
+            }
+        }
+        if (index == -1) {
+            maks_wybrany_rok = 0;
+            maksymalna_ilosc_dni_w_roku = 0;
+
+        } else {
+            maks_wybrany_rok = rok.get(index);
+            maksymalna_ilosc_dni_w_roku = max;
+        }
+
     }
 
     private void initialize() {
@@ -189,16 +183,17 @@ public class Kalendarz {
             }
         }
     }
-    private void update_ilosc_pozostalych_dni_w_roku()
-    {
+
+    private void update_ilosc_pozostalych_dni_w_roku() {
         ilosc_pozostalych_dni = ilosc_zadeklarowanych_dni;
-        int ilosc_dni_wybranych_w_gui=0;
+        int ilosc_dni_wybranych_w_gui = 0;
         for (LocalDate selectedDay : selectedDays) {
-            if(selectedDay.getYear()==selectedYear)
+            if (selectedDay.getYear() == selectedYear)
                 ilosc_dni_wybranych_w_gui++;
         }
-        ilosc_pozostalych_dni-=ilosc_dni_wybranych_w_gui;
+        ilosc_pozostalych_dni -= ilosc_dni_wybranych_w_gui;
     }
+
     private void selectNextMonth() {
         selectedMonth++;
         if (selectedMonth > 12) {
@@ -221,8 +216,7 @@ public class Kalendarz {
     }
 
     private void generateCalendar() {
-        if (selectedYear!=tempYear)
-        {
+        if (selectedYear != tempYear) {
             update_ilosc_pozostalych_dni_w_roku();
             count_max_choosen_days();
             tempYear = selectedYear;
@@ -402,16 +396,22 @@ public class Kalendarz {
 
     private void modifyIloscDni() {
         //popup z pytaniem o ilosc dni
-        String input = JOptionPane.showInputDialog(frame, "Wpisz ile dni wolnych chcesz wybrać:");
-        if (input == null || input.isEmpty()) {
-            System.exit(0);
+        String input = (String) JOptionPane.showInputDialog(frame, "Wpisz ile dni wolnych chcesz wybrać:",
+                "Ilość dni wolnych", JOptionPane.QUESTION_MESSAGE, null, null, ilosc_pozostalych_dni);
+
+        if (input == null) {
+
+        } else if (input.isEmpty()) {
+            //poput z bledem
+            JOptionPane.showMessageDialog(frame, "Błędna liczba dni");
+            modifyIloscDni();
         }
         //check czy liczba
-        if (input.matches("[0-9]+")) {
+        else if (input.matches("[0-9]+") && input != null) {
             int nowa_ilosc_deklar = Integer.parseInt(input);
             if (nowa_ilosc_deklar < 0) {
                 JOptionPane.showMessageDialog(frame, "Błędna liczba dni");
-                //System.exit(0);
+                modifyIloscDni();
             } else if (nowa_ilosc_deklar < maksymalna_ilosc_dni_w_roku) {
                 JOptionPane.showMessageDialog(frame, "Nie możesz wybrać mniej ponieważ w roku " + maks_wybrany_rok +
                         " wybrałeś " + maksymalna_ilosc_dni_w_roku + " dni. Usun w roku " + maks_wybrany_rok + " a następnie " +
@@ -424,7 +424,6 @@ public class Kalendarz {
                 count_max_choosen_days();
                 updateDaysRemainingLabel();
             }
-
 
         }
     }

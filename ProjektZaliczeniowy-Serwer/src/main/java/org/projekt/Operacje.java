@@ -3,7 +3,6 @@ package org.projekt;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
@@ -39,7 +38,7 @@ public class Operacje extends Thread {
     public void run() {
         try {
 
-            //System.out.println("klinet: " + socket.getInetAddress().getHostAddress());
+            System.out.println("Ten Klient wysłał żądanie: " + socket.getInetAddress().getHostAddress());
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String lina = br.readLine();
             JSONObject zap = new JSONObject(lina);
@@ -51,12 +50,10 @@ public class Operacje extends Thread {
                 odp = getInfoAboutUser(zap.getString("nickname"));
             if (zap.getString("operacja").equals("Dodanie_usera"))
                 odp = addUser(zap.getString("nickname"), zap.getInt("ilosc_dni"));
-            if (zap.getString("operacja").equals("Ustawienie_dni_wolnych")) {
+            if (zap.getString("operacja").equals("Ustawienie_dni_wolnych"))
                 setDniWolne(zap.getInt("id_uzytkownika"), zap.getJSONArray("dni_wolne"));
-            }
             if (zap.getString("operacja").equals("Modyfikacja_ilosci_dni"))
                 modifyIloscDni(zap.getInt("id_uzytkownika"), zap.getInt("ilosc_zadeklarowanych_dni"));
-
 
 
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -64,7 +61,7 @@ public class Operacje extends Thread {
             bw.newLine();
             bw.flush();
             socket.close();
-        } catch (IOException | SQLException e) {
+        } catch (IOException | SQLException | JSONException e) {
             throw new RuntimeException(e);
         }
     }

@@ -63,17 +63,6 @@ public class BazaDanych {
         }
     }
 
-    public int getIloscPozostalychDni(int id) throws SQLException {
-        Statement stmt = connection.createStatement();
-        String sql = "SELECT ilosc_dni_pozostalych FROM uzytkownicy WHERE id = " + id + ";";
-        stmt.executeQuery(sql);
-        if (stmt.getResultSet().next()) {
-            return stmt.getResultSet().getInt(1);
-        } else {
-            return -1;
-        }
-    }
-
     public String getTimeStamptz(int id) throws SQLException {
         Statement stmt = connection.createStatement();
         String sql = "SELECT created_at FROM uzytkownicy WHERE id = " + id + ";";
