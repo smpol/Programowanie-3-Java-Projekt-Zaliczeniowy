@@ -2,7 +2,6 @@ package org.projet;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;

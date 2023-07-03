@@ -2,7 +2,6 @@ package org.projet;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
@@ -34,17 +33,6 @@ public class OperacjeDoSerwera {
         zapytanie.put("ilosc_dni", ilosc_dni);
         return operacja(zapytanie);
     }
-
-//        JSONObject countDaysOnYear(int id, int rok)
-//        {
-//            JSONObject zapytanie = new JSONObject();
-//            zapytanie.put("operacja", "Policzenie_dni_na_rok");
-//            zapytanie.put("id_uzytkownika", id);
-//            zapytanie.put("wybrany_rok", rok);
-//            return operacja(zapytanie);
-//
-//        }
-
     int countDaysOnYear(int id, int rok)
     {
         JSONObject zapytanie = new JSONObject();
@@ -57,8 +45,6 @@ public class OperacjeDoSerwera {
 
     void setDniWolne(int id, Set<LocalDate> selectedDays) {
         JSONObject zapytanie = new JSONObject();
-
-        //convert selectedDays to JSONArray in pattern yyyy-MM-dd
         JSONArray selectedDaysJson = new JSONArray();
         for (LocalDate day : selectedDays) {
             selectedDaysJson.put(day.toString());
@@ -74,7 +60,6 @@ public class OperacjeDoSerwera {
         zapytanie.put("operacja", "Modyfikacja_ilosci_dni");
         zapytanie.put("id_uzytkownika", id_uzytkownika);
         zapytanie.put("ilosc_zadeklarowanych_dni", ilosc_zadeklarowanych_dni);
-        //zapytanie.put("ilosc_pozostalych_dni", ilosc_pozostalych_dni);
         operacja(zapytanie);
     }
     JSONObject operacja(JSONObject wybrana_oberacja) {
@@ -92,7 +77,6 @@ public class OperacjeDoSerwera {
 
             return new JSONObject(linia);
         } catch (IOException e) {
-            //throw new RuntimeException(e);
             JOptionPane.showMessageDialog(null, "Nie można połączyć się z serwerem", "Błąd", JOptionPane.ERROR_MESSAGE);
               System.exit(1);
         }
