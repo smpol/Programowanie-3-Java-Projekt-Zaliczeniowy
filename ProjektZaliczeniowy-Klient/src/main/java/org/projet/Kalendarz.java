@@ -189,31 +189,16 @@ public class Kalendarz {
             }
         }
     }
-
     private void update_ilosc_pozostalych_dni_w_roku()
     {
         ilosc_pozostalych_dni = ilosc_zadeklarowanych_dni;
-//        ilosc_pozostalych_dni -= operacjeDoSerwera.countDaysOnYear(id_uzytkownika, selectedYear);
-        int ilosc_dni_wybranych_w_bazie=operacjeDoSerwera.countDaysOnYear(id_uzytkownika, selectedYear);
-        //check if ilosc_dni_wybranych_w_bazie is lower than in selectedDays
         int ilosc_dni_wybranych_w_gui=0;
         for (LocalDate selectedDay : selectedDays) {
             if(selectedDay.getYear()==selectedYear)
                 ilosc_dni_wybranych_w_gui++;
         }
-
-        if (ilosc_dni_wybranych_w_bazie<ilosc_dni_wybranych_w_gui)
-        {
-            ilosc_pozostalych_dni-=ilosc_dni_wybranych_w_gui;
-        }
-        else
-        {
-            ilosc_pozostalych_dni-=ilosc_dni_wybranych_w_bazie;
-        }
-        updateDaysRemainingLabel();
-
+        ilosc_pozostalych_dni-=ilosc_dni_wybranych_w_gui;
     }
-
     private void selectNextMonth() {
         selectedMonth++;
         if (selectedMonth > 12) {
@@ -223,17 +208,6 @@ public class Kalendarz {
     }
 
     private void sortSelectedDays() {
-//        // sort selectedDaysModel
-//        List<String> temp = new ArrayList<>();
-//        for (int i = 0; i < selectedDaysModel.size(); i++) {
-//            temp.add(selectedDaysModel.get(i));
-//        }
-//        Collections.sort(temp);
-//        selectedDaysModel.clear();
-//        for (int i = 0; i < temp.size(); i++) {
-//            selectedDaysModel.addElement(temp.get(i));
-//        }
-        //sort selectedDays
         ArrayList<LocalDate> temp = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         for (LocalDate selectedDay : selectedDays) {
@@ -244,7 +218,6 @@ public class Kalendarz {
         for (LocalDate selectedDay : temp) {
             selectedDaysModel.addElement(selectedDay.format(formatter));
         }
-
     }
 
     private void generateCalendar() {
@@ -254,7 +227,6 @@ public class Kalendarz {
             count_max_choosen_days();
             tempYear = selectedYear;
         }
-        //System.out.println("tempYear: " + tempYear);
         sortSelectedDays();
 
         calendarPanel.removeAll();
@@ -402,7 +374,7 @@ public class Kalendarz {
     }
 
     private void showDaysRemainingInputDialog() {
-        String input = JOptionPane.showInputDialog(frame, "Wpisz ile dni wolnych chcesz wybrać:");
+        String input = JOptionPane.showInputDialog(frame, "Wpisz ile dni wolnych chcesz wybrać w roku:");
         if (input == null || input.isEmpty()) {
             System.exit(0);
         }

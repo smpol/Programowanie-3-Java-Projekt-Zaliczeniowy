@@ -54,8 +54,6 @@ public class Operacje extends Thread {
             if (zap.getString("operacja").equals("Ustawienie_dni_wolnych")) {
                 setDniWolne(zap.getInt("id_uzytkownika"), zap.getJSONArray("dni_wolne"));
             }
-            if (zap.getString("operacja").equals("Policzenie_dni_na_rok"))
-                odp = countDaysOnYear(zap.getInt("id_uzytkownika"), zap.getInt("wybrany_rok"));
             if (zap.getString("operacja").equals("Modyfikacja_ilosci_dni"))
                 modifyIloscDni(zap.getInt("id_uzytkownika"), zap.getInt("ilosc_zadeklarowanych_dni"));
 
@@ -70,6 +68,7 @@ public class Operacje extends Thread {
             throw new RuntimeException(e);
         }
     }
+
 
     JSONObject addUser(String nickname, int ilosc_dni) throws SQLException {
         JSONObject zapytanie = new JSONObject();
@@ -102,17 +101,6 @@ public class Operacje extends Thread {
         return zapytanie;
     }
 
-    JSONObject countDaysOnYear(int id, int rok) throws SQLException {
-        JSONObject zapytanie = new JSONObject();
-        try {
-            zapytanie.put("ilosc_dni_w_wybranym_roku", db.countDaysOnYear(id, rok));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return zapytanie;
-    }
     void setDniWolne(int id_uzytkownika, JSONArray dniWolne) throws SQLException {
         //convert JSONArray to Set<LocalDate> in pattern yyyy-MM-dd
         Set<LocalDate> temp = new HashSet<>();

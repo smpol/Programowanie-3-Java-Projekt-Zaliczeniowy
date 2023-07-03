@@ -85,6 +85,7 @@ public class BazaDanych {
         }
     }
 
+
     public void modifyIloscDni(int id, int ilosc_zadeklarowanych_dni) {
         try {
             Statement stmt = connection.createStatement();
