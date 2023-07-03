@@ -1,4 +1,4 @@
-package org.example;
+package org.projet;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -334,6 +334,8 @@ public class Kalendarz {
         operacjeDoSerwera.setDniWolne(id_uzytkownika, selectedDays);
         JOptionPane.showMessageDialog(frame, "Wybrane dni wolne zostały potwierdzone!");
         operacjeDoSerwera.modifyIloscDni(id_uzytkownika, ilosc_zadeklarowanych_dni, ilosc_pozostalych_dni);
+        update_ilosc_pozostalych_dni_w_roku();
+        count_max_choosen_days();
     }
 
     private void showNicknameInputDialog() {
@@ -429,7 +431,8 @@ public class Kalendarz {
                 ilosc_pozostalych_dni = nowa_ilosc_deklar - (ilosc_zadeklarowanych_dni - ilosc_pozostalych_dni);
                 ilosc_zadeklarowanych_dni = nowa_ilosc_deklar;
                 operacjeDoSerwera.modifyIloscDni(id_uzytkownika, ilosc_zadeklarowanych_dni, ilosc_pozostalych_dni);
-
+                update_ilosc_pozostalych_dni_w_roku();
+                count_max_choosen_days();
                 updateDaysRemainingLabel();
             }
 
