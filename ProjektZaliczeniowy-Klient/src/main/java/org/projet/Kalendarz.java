@@ -193,7 +193,25 @@ public class Kalendarz {
     private void update_ilosc_pozostalych_dni_w_roku()
     {
         ilosc_pozostalych_dni = ilosc_zadeklarowanych_dni;
-        ilosc_pozostalych_dni -= operacjeDoSerwera.countDaysOnYear(id_uzytkownika, selectedYear);
+//        ilosc_pozostalych_dni -= operacjeDoSerwera.countDaysOnYear(id_uzytkownika, selectedYear);
+        int ilosc_dni_wybranych_w_bazie=operacjeDoSerwera.countDaysOnYear(id_uzytkownika, selectedYear);
+        //check if ilosc_dni_wybranych_w_bazie is lower than in selectedDays
+        int ilosc_dni_wybranych_w_gui=0;
+        for (LocalDate selectedDay : selectedDays) {
+            if(selectedDay.getYear()==selectedYear)
+                ilosc_dni_wybranych_w_gui++;
+        }
+
+        if (ilosc_dni_wybranych_w_bazie<ilosc_dni_wybranych_w_gui)
+        {
+            ilosc_pozostalych_dni-=ilosc_dni_wybranych_w_gui;
+        }
+        else
+        {
+            ilosc_pozostalych_dni-=ilosc_dni_wybranych_w_bazie;
+        }
+        updateDaysRemainingLabel();
+
     }
 
     private void selectNextMonth() {

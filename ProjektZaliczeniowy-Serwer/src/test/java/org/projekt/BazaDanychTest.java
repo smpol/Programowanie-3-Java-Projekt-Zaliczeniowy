@@ -2,6 +2,7 @@ package org.projekt;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
@@ -19,13 +20,13 @@ class BazaDanychTest {
         bazaDanych.connection.close();
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void checkUserExist() throws SQLException {
         assertFalse(bazaDanych.checkUserExist("nieistniejcy_uzytkownik"));
         assertTrue(bazaDanych.checkUserExist("test"));
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void getID() throws SQLException {
         assertEquals(-1, bazaDanych.getID("nieistniejcy_uzytkownik"));
     }
