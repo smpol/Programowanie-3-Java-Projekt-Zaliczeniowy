@@ -52,7 +52,7 @@ public class Kalendarz {
     private void count_max_choosen_days() {
         ArrayList<Integer> ilosc_dni_w_roku = new ArrayList<>();
         ArrayList<Integer> rok = new ArrayList<>();
-        //foreach selectedDays find year and add to array ilosc_dni_w_roku
+
         for (LocalDate day : selectedDays) {
             int year = day.getYear();
             if (!rok.contains(year)) {
@@ -62,7 +62,7 @@ public class Kalendarz {
             int index = rok.indexOf(year);
             ilosc_dni_w_roku.set(index, ilosc_dni_w_roku.get(index) + 1);
         }
-        //find max
+
         int max = 0;
         int index = -1;
         for (int i = 0; i < ilosc_dni_w_roku.size(); i++) {
@@ -120,7 +120,7 @@ public class Kalendarz {
         frame.getContentPane().add(monthYearLabel);
 
         JButton confirmButton = new JButton("Zatwierdź wybór dni wolnych");
-        confirmButton.setBounds(580, 360, 200, 30);
+        confirmButton.setBounds(575, 360, 210, 30);
         frame.getContentPane().add(confirmButton);
 
         JButton modifyButton = new JButton("Modyfikuj ilość dni");
@@ -129,7 +129,6 @@ public class Kalendarz {
 
 
         previousMonthButton.addActionListener(e -> {
-            //selectPreviousMonth();
             selectPreviousMonth(selectedMonth, selectedYear);
             generateCalendar();
         });
@@ -176,7 +175,6 @@ public class Kalendarz {
 
     private void selectPreviousMonth(int poprzedni_miesiac, int poprzedni_rok) {
         if (pierwsza_data_miesiac == poprzedni_miesiac && pierwsza_data_rok == poprzedni_rok) {
-            //make alert
             JOptionPane.showMessageDialog(frame, "Nie możesz cofnąć się w czasie. Wtedy nie miales konta i nie deklarowales dni wolnych.");
         } else {
             selectedMonth--;
@@ -219,6 +217,12 @@ public class Kalendarz {
     }
 
     private void generateCalendar() {
+        try{
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
         if (selectedYear != tempYear) {
             update_ilosc_pozostalych_dni_w_roku();
             count_max_choosen_days();
@@ -253,9 +257,6 @@ public class Kalendarz {
             LocalDate date = LocalDate.of(selectedYear, selectedMonth, day);
             if (selectedDays.contains(date) && date.getMonthValue() == selectedMonth) {
                 dayButton.setBackground(Color.RED);
-                dayButton.setOpaque(true); //dla macosa
-//                frame.revalidate(); //dla macosa
-//                frame.repaint(); //dla macosa
             }
 
             calendarPanel.add(dayButton);
@@ -313,7 +314,6 @@ public class Kalendarz {
 
         LocalDate date = LocalDate.parse(selectedDay, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         selectedDays.remove(date);
-        //ilosc_pozostalych_dni++;
         update_ilosc_pozostalych_dni_w_roku();
         updateDaysRemainingLabel();
         generateCalendar();
@@ -342,7 +342,6 @@ public class Kalendarz {
                 id_uzytkownika = wynik.getInt("id_uzytkownika");
 
                 ilosc_zadeklarowanych_dni = wynik.getInt("ilosc_zadeklarowanych_dni");
-                //ilosc_pozostalych_dni = wynik.getInt("ilosc_pozostalych_dni");
                 String temp = wynik.getString("TimeStamptz");
                 pierwsza_data_miesiac = Integer.parseInt(temp.substring(5, 7));
                 pierwsza_data_rok = Integer.parseInt(temp.substring(0, 4));
@@ -358,21 +357,15 @@ public class Kalendarz {
                 updateDaysRemainingLabel();
 
             } else {
-
                 LocalDate temp = LocalDate.now();
                 pierwsza_data_miesiac = temp.getMonthValue();
                 pierwsza_data_rok = temp.getYear();
-
-                //copySelectedDaysToSelectedDaysModel();
-
                 JOptionPane.showMessageDialog(frame, "Witaj " + nickname + "!");
                 showDaysRemainingInputDialog();
             }
         } catch (HeadlessException e) {
             throw new RuntimeException(e);
         }
-
-        //showDaysRemainingInputDialog();
     }
 
     private void showDaysRemainingInputDialog() {
@@ -403,18 +396,15 @@ public class Kalendarz {
     }
 
     private void modifyIloscDni() {
-        //popup z pytaniem o ilosc dni
         String input = (String) JOptionPane.showInputDialog(frame, "Wpisz ile dni wolnych chcesz wybrać:",
                 "Ilość dni wolnych", JOptionPane.QUESTION_MESSAGE, null, null, ilosc_zadeklarowanych_dni);
 
         if (input == null) {
 
         } else if (input.isEmpty()) {
-            //poput z bledem
             JOptionPane.showMessageDialog(frame, "Błędna liczba dni");
             modifyIloscDni();
         }
-        //check czy liczba
         else if (input.matches("[0-9]+")) {
             int nowa_ilosc_deklar = Integer.parseInt(input);
             if (nowa_ilosc_deklar < 0) {
@@ -427,8 +417,6 @@ public class Kalendarz {
             } else {
                 ilosc_pozostalych_dni = nowa_ilosc_deklar - (ilosc_zadeklarowanych_dni - ilosc_pozostalych_dni);
                 ilosc_zadeklarowanych_dni = nowa_ilosc_deklar;
-//                operacjeDoSerwera.modifyIloscDni(id_uzytkownika, ilosc_zadeklarowanych_dni);
-//                operacjeDoSerwera.setDniWolne(id_uzytkownika, selectedDays);
                 update_ilosc_pozostalych_dni_w_roku();
                 count_max_choosen_days();
                 updateDaysRemainingLabel();
