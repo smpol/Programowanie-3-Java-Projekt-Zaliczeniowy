@@ -248,6 +248,7 @@ public class Kalendarz {
             LocalDate date = LocalDate.of(selectedYear, selectedMonth, day);
             if (selectedDays.contains(date) && date.getMonthValue() == selectedMonth) {
                 dayButton.setBackground(Color.RED);
+                dayButton.setOpaque(true); //dla macosa
             }
 
             calendarPanel.add(dayButton);
