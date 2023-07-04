@@ -33,9 +33,9 @@ public class Kalendarz {
     private int selectedMonth;
     private int ilosc_pozostalych_dni;
     private String nickname;
-
     private int maksymalna_ilosc_dni_w_roku = 0;
     private int maks_wybrany_rok = 0;
+    private boolean czy_byly_modifikacje = false;
 
     public Kalendarz() throws ClassNotFoundException {
         initialize();
@@ -79,7 +79,6 @@ public class Kalendarz {
             maks_wybrany_rok = rok.get(index);
             maksymalna_ilosc_dni_w_roku = max;
         }
-
     }
 
     private void initialize() {
@@ -156,13 +155,19 @@ public class Kalendarz {
 
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent we) {
-                int result = JOptionPane.showConfirmDialog(frame,
-                        "Czy na pewno chcesz wyjść z programu? Niezapisany postęp zostanie utracony", "Wyjście z programu",
-                        JOptionPane.YES_NO_OPTION);
-                if (result == JOptionPane.YES_OPTION)
-                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                else if (result == JOptionPane.NO_OPTION)
-                    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+                if (czy_byly_modifikacje == true) {
+                    int result = JOptionPane.showConfirmDialog(frame,
+                            "Czy na pewno chcesz wyjść z programu? Niezapisany postęp zostanie utracony", "Wyjście z programu",
+                            JOptionPane.YES_NO_OPTION);
+                    if (result == JOptionPane.YES_OPTION)
+                        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    else if (result == JOptionPane.NO_OPTION)
+                        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                }
+                else {
+                    System.exit(0);
+                }
             }
         });
 
@@ -249,6 +254,8 @@ public class Kalendarz {
             if (selectedDays.contains(date) && date.getMonthValue() == selectedMonth) {
                 dayButton.setBackground(Color.RED);
                 dayButton.setOpaque(true); //dla macosa
+//                frame.revalidate(); //dla macosa
+//                frame.repaint(); //dla macosa
             }
 
             calendarPanel.add(dayButton);
@@ -283,6 +290,7 @@ public class Kalendarz {
         }
         sortSelectedDays();
         updateDaysRemainingLabel();
+        czy_byly_modifikacje = true;
     }
 
     private void updateDaysRemainingLabel() {
@@ -309,15 +317,16 @@ public class Kalendarz {
         update_ilosc_pozostalych_dni_w_roku();
         updateDaysRemainingLabel();
         generateCalendar();
+        czy_byly_modifikacje = true;
     }
 
     private void confirmSelectedDays() {
-
-        operacjeDoSerwera.setDniWolne(id_uzytkownika, selectedDays);
         JOptionPane.showMessageDialog(frame, "Wybrane dni wolne zostały potwierdzone!");
-        operacjeDoSerwera.modifyIloscDni(id_uzytkownika, ilosc_zadeklarowanych_dni, ilosc_pozostalych_dni);
+        operacjeDoSerwera.setDniWolne(id_uzytkownika, selectedDays);
+        operacjeDoSerwera.modifyIloscDni(id_uzytkownika, ilosc_zadeklarowanych_dni);
         update_ilosc_pozostalych_dni_w_roku();
         count_max_choosen_days();
+        czy_byly_modifikacje = false;
     }
 
     private void showNicknameInputDialog() {
@@ -396,7 +405,7 @@ public class Kalendarz {
     private void modifyIloscDni() {
         //popup z pytaniem o ilosc dni
         String input = (String) JOptionPane.showInputDialog(frame, "Wpisz ile dni wolnych chcesz wybrać:",
-                "Ilość dni wolnych", JOptionPane.QUESTION_MESSAGE, null, null, ilosc_pozostalych_dni);
+                "Ilość dni wolnych", JOptionPane.QUESTION_MESSAGE, null, null, ilosc_zadeklarowanych_dni);
 
         if (input == null) {
 
@@ -418,7 +427,8 @@ public class Kalendarz {
             } else {
                 ilosc_pozostalych_dni = nowa_ilosc_deklar - (ilosc_zadeklarowanych_dni - ilosc_pozostalych_dni);
                 ilosc_zadeklarowanych_dni = nowa_ilosc_deklar;
-                operacjeDoSerwera.modifyIloscDni(id_uzytkownika, ilosc_zadeklarowanych_dni, ilosc_pozostalych_dni);
+//                operacjeDoSerwera.modifyIloscDni(id_uzytkownika, ilosc_zadeklarowanych_dni);
+//                operacjeDoSerwera.setDniWolne(id_uzytkownika, selectedDays);
                 update_ilosc_pozostalych_dni_w_roku();
                 count_max_choosen_days();
                 updateDaysRemainingLabel();

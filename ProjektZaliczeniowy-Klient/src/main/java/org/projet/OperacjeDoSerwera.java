@@ -45,7 +45,7 @@ public class OperacjeDoSerwera {
         zapytanie.put("dni_wolne", selectedDaysJson);
         operacja(zapytanie);
     }
-    void modifyIloscDni(int id_uzytkownika, int ilosc_zadeklarowanych_dni, int ilosc_pozostalych_dni)
+    void modifyIloscDni(int id_uzytkownika, int ilosc_zadeklarowanych_dni)
     {
         JSONObject zapytanie = new JSONObject();
         zapytanie.put("operacja", "Modyfikacja_ilosci_dni");
