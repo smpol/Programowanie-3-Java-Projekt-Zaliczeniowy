@@ -14,7 +14,7 @@ public class BazaDanych {
 
     public BazaDanych() throws ClassNotFoundException, SQLException {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection("jdbc:postgresql://db.kwkwxhowsldcunyaeung.supabase.co:5432/postgres?user=postgres&password=nHZ5pS7HwVbi6");
+            connection = DriverManager.getConnection("jdbc:postgresql://db.kwkwxhowsldcunyaeung.supabase.co:5432/postgres?user=postgres&password=TAJNEHASLO");
     }
 
     public boolean checkUserExist(String username) throws SQLException {
